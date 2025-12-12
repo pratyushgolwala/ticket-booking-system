@@ -1,0 +1,149 @@
+{
+  "info": {
+    "name": "Ticket Booking System API",
+    "description": "API endpoints for the concurrency-safe ticket booking system",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Admin",
+      "item": [
+        {
+          "name": "Create Show",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Summer Music Festival\",\n  \"start_time\": \"2025-12-30T18:00:00Z\",\n  \"total_seats\": 20\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/admin/shows",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["admin", "shows"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Shows",
+      "item": [
+        {
+          "name": "List All Shows",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/shows",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["shows"]
+            }
+          }
+        },
+        {
+          "name": "Get Seats for Show",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/shows/1/seats",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["shows", "1", "seats"]
+            }
+          }
+        },
+        {
+          "name": "Book Seats (Immediate Confirm)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"seat_nos\": [\"3\", \"4\"],\n  \"user_id\": \"user123\",\n  \"immediate_confirm\": true\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/shows/1/book",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["shows", "1", "book"]
+            }
+          }
+        },
+        {
+          "name": "Book Seats (Pending with Expiry)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"seat_nos\": [\"5\", \"6\"],\n  \"user_id\": \"user456\",\n  \"immediate_confirm\": false\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/shows/1/book",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["shows", "1", "book"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Bookings",
+      "item": [
+        {
+          "name": "Get Booking Details",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/bookings/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3000",
+              "path": ["bookings", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/health",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["health"]
+        }
+      }
+    }
+  ]
+}

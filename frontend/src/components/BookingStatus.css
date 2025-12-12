@@ -1,0 +1,61 @@
+.booking-status {
+  padding: 1.25rem 1.5rem;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin: 1.5rem 0;
+  animation: slideIn 0.4s ease;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.booking-status__icon {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.booking-status__message {
+  flex: 1;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.booking-status--confirmed {
+  background: #d1fae5;
+  border: 2px solid #10b981;
+  color: #065f46;
+}
+
+.booking-status--confirmed .booking-status__icon {
+  color: #10b981;
+}
+
+.booking-status--pending {
+  background: #fef3c7;
+  border: 2px solid #f59e0b;
+  color: #92400e;
+}
+
+.booking-status--pending .booking-status__icon {
+  color: #f59e0b;
+}
+
+.booking-status--failed {
+  background: #fee2e2;
+  border: 2px solid #ef4444;
+  color: #991b1b;
+}
+
+.booking-status--failed .booking-status__icon {
+  color: #ef4444;
+}

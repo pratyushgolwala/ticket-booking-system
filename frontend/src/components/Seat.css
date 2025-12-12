@@ -1,0 +1,73 @@
+.seat {
+  aspect-ratio: 1;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 50px;
+}
+
+.seat:focus {
+  outline: 2px solid #0f766e;
+  outline-offset: 2px;
+}
+
+.seat--available {
+  background: #e0f2f1;
+  color: #0d9488;
+  border: 2px solid #0d9488;
+}
+
+.seat--available:hover:not(.seat--disabled) {
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(13, 148, 136, 0.3);
+}
+
+.seat--selected {
+  background: linear-gradient(135deg, #0f766e 0%, #0d9488 100%);
+  color: white;
+  border: 2px solid #0f766e;
+  animation: seatPop 0.3s ease;
+}
+
+@keyframes seatPop {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.15);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.seat--unavailable {
+  background: #e2e8f0;
+  color: #94a3b8;
+  border: 2px solid #cbd5e1;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.seat--disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.seat__number {
+  user-select: none;
+}
+
+@media (max-width: 768px) {
+  .seat {
+    font-size: 0.8rem;
+    min-height: 45px;
+  }
+}
