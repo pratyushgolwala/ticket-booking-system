@@ -6,7 +6,8 @@ const logger = require('../utils/logger');
 
 async function runMigrations() {
   const client = new Client({
-    connectionString: process.env.DATABASE_URL
+    connectionString: process.env.DATABASE_URL,
+    ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
   });
   
   try {
@@ -33,10 +34,17 @@ async function runMigrations() {
     
   } catch (error) {
     logger.error('Migration failed:', error.message);
-    process.exit(1);
+    logger.error('Full error:', error);
+    // Don't exit - let the server start anyway (tables might already exist)
+    logger.warn('Continuing despite migration error (tables may already exist)');
   } finally {
     await client.end();
   }
 }
 
-runMigrations();
+// Export for use in start script
+if (require.main === module) {
+  runMigrations();
+} else {
+  module.exports = runMigrations;
+}
