@@ -1,6 +1,9 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const fs = require('fs');
+const path = require('path');
+const { Client } = require('pg');
 const logger = require('./utils/logger');
 const pool = require('./db');
 
@@ -66,11 +69,79 @@ process.on('SIGINT', async () => {
   process.exit(0);
 });
 
-// Start server
-app.listen(PORT, () => {
-  logger.info(`Server running on port ${PORT}`);
-  logger.info(`Environment: ${process.env.NODE_ENV}`);
+// Migration function
+async function runMigrations() {
+  logger.info('=== Running Database Migrations ===');
+  logger.info('DATABASE_URL present:', !!process.env.DATABASE_URL);
   
-  // Start the expiry worker
-  startExpiryWorker();
+  const client = new Client({
+    connectionString: process.env.DATABASE_URL,
+    ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
+  });
+  
+  try {
+    logger.info('Connecting to database...');
+    await client.connect();
+    logger.info('✓ Connected to database');
+    
+    // Read and execute schema.sql
+    const schemaPath = path.join(__dirname, '../schema.sql');
+    logger.info('Schema path:', schemaPath);
+    
+    if (!fs.existsSync(schemaPath)) {
+      throw new Error(`Schema file not found at ${schemaPath}`);
+    }
+    
+    const schemaSql = fs.readFileSync(schemaPath, 'utf-8');
+    logger.info(`✓ Schema SQL loaded (${schemaSql.length} bytes)`);
+    
+    logger.info('Executing schema.sql...');
+    await client.query(schemaSql);
+    logger.info('✓ Schema created successfully');
+    
+    // Read and execute seed.sql
+    const seedPath = path.join(__dirname, '../seed.sql');
+    logger.info('Seed path:', seedPath);
+    
+    if (!fs.existsSync(seedPath)) {
+      throw new Error(`Seed file not found at ${seedPath}`);
+    }
+    
+    const seedSql = fs.readFileSync(seedPath, 'utf-8');
+    logger.info(`✓ Seed SQL loaded (${seedSql.length} bytes)`);
+    
+    logger.info('Executing seed.sql...');
+    await client.query(seedSql);
+    logger.info('✓ Seed data inserted successfully');
+    
+    logger.info('✓✓✓ Migrations completed successfully! ✓✓✓');
+    
+  } catch (error) {
+    logger.error('Migration error:', error.message);
+    logger.error('Full error:', error);
+    logger.warn('Continuing anyway (tables may already exist)...');
+  } finally {
+    await client.end();
+  }
+}
+
+// Start server (after migrations)
+async function startServer() {
+  // Run migrations first
+  await runMigrations();
+  
+  // Then start the Express server
+  app.listen(PORT, () => {
+    logger.info(`Server running on port ${PORT}`);
+    logger.info(`Environment: ${process.env.NODE_ENV}`);
+    
+    // Start the expiry worker
+    startExpiryWorker();
+  });
+}
+
+// Start everything
+startServer().catch(err => {
+  logger.error('Failed to start server:', err);
+  process.exit(1);
 });
